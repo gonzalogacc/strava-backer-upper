@@ -1,18 +1,15 @@
-mod settings;
 
 use std::collections::HashMap;
 use std::env;
 
 #[derive(Default)]
 pub struct Settings {
-    variable_names: Vec<String>,
     variables: HashMap<String, String>,
 }
 
 impl Settings {
     pub fn new() -> Settings {
         Settings {
-            variable_names: Vec::new(),
             variables: HashMap::new(),
         }
     }
@@ -54,7 +51,7 @@ mod tests{
     }
 
     #[test]
-    fn test_ping() {
+    fn test_() {
         let dir = tempdir().unwrap();
         let file_path = dir.path().join(".temp_dotenv");
         let mut file = File::create(&file_path).unwrap();
