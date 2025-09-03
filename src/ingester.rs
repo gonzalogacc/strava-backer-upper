@@ -1,18 +1,15 @@
-use std::error::Error;
-use std::io;
 use serde;
-use serde::{Serialize, Deserialize};
+use serde::Deserialize;
 use chrono::{DateTime, Utc, Datelike};
-use chrono::serde::ts_seconds_option;
 use url::Url;
 
-#[derive(Deserialize)]
-struct Athlete {
-    id: i32,
+#[derive(Deserialize, Debug)]
+pub struct Athlete {
+    pub id: i64,
 
     #[serde(default)]
-    username: Option<String>,
-    firstname: String,
+    pub username: Option<String>,
+    pub firstname: String,
     lastname: String,
     profile: Url,
     created_at: DateTime<Utc>,
