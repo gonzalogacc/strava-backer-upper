@@ -62,6 +62,27 @@ struct ActivityStream {
     resolution: String,
 }
 
+impl ActivityStream {
+
+    fn from(stream_data: &str) -> ActivityStream {
+        let stream = serde_json::from_str(stream_data).unwrap();
+        stream
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(transparent)]
+struct ActivityStreams {
+    streams: Vec<ActivityStream>,
+}
+
+impl ActivityStreams {
+    fn from(streams_data: &str) -> ActivityStreams {
+        let acts = serde_json::from_str(streams_data).unwrap();
+        acts
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -98,6 +119,9 @@ mod test {
 
     #[test]
     fn test_activity_stream() {
-        
+        let stream_data = r#"[ {"type" : "distance", "data" : [ 2.9, 5.8, 8.5, 11.7, 15, 19, 23.2, 28, 32.8, 38.1, 43.8, 49.5 ], "series_type" : "distance", "original_size" : 12, "resolution" : "high"}]"#;
+        let stream = ActivityStreams::from(stream_data);
+        assert_eq!(stream.streams[0].stream_type, "distance");
+
     }
 }
