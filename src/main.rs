@@ -13,7 +13,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>>{
     settings.load("STRAVA_KEY").expect("Could not load variable");
     let value = settings.get_value("MYNAME").unwrap();
 
-    let sc = StravaClient::init("");
+    let sc = StravaClient::init(settings.get_value("STRAVA_KEY").expect("Could not get strava key from env"));
     let athlete = sc.get_user().await.unwrap();
     println!("{:?}", athlete);
     Ok(())

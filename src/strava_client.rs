@@ -1,5 +1,6 @@
 use crate::ingester::Athlete;
 use std::fmt;
+use crate::settings;
 
 pub struct StravaClient {
     api_token: String,
@@ -29,7 +30,11 @@ impl StravaClient {
 
 #[tokio::test]
 async fn test_get_user_request() {
-    let sc = StravaClient::init("");
+    dotenv::dotenv().ok();
+    let mut settings = settings::Settings::new();
+    settings.load("STRAVA_KEY").expect("Could not load variable");
+
+    let sc = StravaClient::init(settings.get_value("STRAVA_KEY").expect("Could not get strava key from env"));
     let at = sc.get_user().await.unwrap();
     assert_eq!(at.id, 28853829);
 }
