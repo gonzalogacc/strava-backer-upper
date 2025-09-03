@@ -29,7 +29,7 @@ impl StravaClient {
 
 #[tokio::test]
 async fn test_get_user_request() {
-    let sc = StravaClient::init("8c8029bc065f924ea7e8d61efe15439e688d0da6");
+    let sc = StravaClient::init("");
     let at = sc.get_user().await.unwrap();
     assert_eq!(at.id, 28853829);
 }
