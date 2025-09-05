@@ -43,7 +43,7 @@ mod tests{
     use std::fs::File;
     use tempfile::{tempdir};
     use super::*;
-    use std::io::{self, Write};
+    use std::io::{Write};
 
     #[test]
     fn test_find_key() {
