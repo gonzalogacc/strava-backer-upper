@@ -5,6 +5,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use url::Url;
 
+
 #[derive(Deserialize, Serialize)]
 pub struct LoginUrl {
     pub url: String,
@@ -28,11 +29,12 @@ pub struct StravaClient {
 }
 
 impl StravaClient {
-    pub fn init(base_url: &str, client_secret: String) -> StravaClient {
+    pub fn init(base_url: &str, client_secret: &str) -> StravaClient {
+
         StravaClient {
             base_url: base_url.to_string(),
             client_id: 118327,
-            client_secret,
+            client_secret: client_secret.to_string(),
             token_file: "./tokens.txt".to_string(),
         }
     }
@@ -118,7 +120,7 @@ async fn test_get_user_request() {
         .mount(&mock_server)
         .await;
 
-    let sc = StravaClient::init(&mock_server.uri(), "mock-app-token".to_string());
+    let sc = StravaClient::init(&mock_server.uri(), "mock-app-token");
     let at = sc.get_user().await.unwrap();
     assert_eq!(at.id, 28853829);
 }
