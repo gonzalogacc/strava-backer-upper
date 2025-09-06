@@ -1,6 +1,6 @@
+use chrono::{DateTime, Datelike, Utc};
 use serde;
 use serde::Deserialize;
-use chrono::{DateTime, Utc, Datelike};
 use url::Url;
 
 #[derive(Deserialize, Debug)]
@@ -21,7 +21,6 @@ impl Athlete {
         let at: Athlete = serde_json::from_str(athlete_data).unwrap();
         Ok(at)
     }
-
 }
 
 #[derive(Deserialize)]
@@ -40,10 +39,7 @@ struct Activity {
     start_date: DateTime<Utc>,
 }
 
-
-
 impl Activity {
-
     fn new(data: &str) -> Result<Activity, serde_json::Error> {
         serde_json::from_str(data)
     }
@@ -51,7 +47,7 @@ impl Activity {
 
 #[derive(Deserialize)]
 struct ActivityStream {
-    #[serde(alias="type")]
+    #[serde(alias = "type")]
     stream_type: String,
     data: Vec<f32>,
     series_type: String,
@@ -60,7 +56,6 @@ struct ActivityStream {
 }
 
 impl ActivityStream {
-
     fn from(stream_data: &str) -> ActivityStream {
         let stream = serde_json::from_str(stream_data).unwrap();
         stream
@@ -86,7 +81,6 @@ mod test {
 
     #[test]
     fn test_get_athlete() {
-
         let input = r#"{"id":28853829,"username":null,"resource_state":2,"firstname":"Gonzalo","lastname":"Garcia","bio":"","city":"","state":"","country":"","sex":null,"premium":false,"summit":false,"created_at":"2018-03-09T23:01:47Z","updated_at":"2024-01-28T21:00:13Z","badge_type_id":0,"weight":84.6,"profile_medium":"https://graph.facebook.com/10156169906188476/picture?height=256\u0026width=256","profile":"https://graph.facebook.com/10156169906188476/picture?height=256\u0026width=256","friend":null,"follower":null}"#;
         let atlh = Athlete::new(input).unwrap();
 
@@ -97,9 +91,15 @@ mod test {
         let athl = Athlete::new(input).unwrap();
 
         assert_eq!(athl.id, 28853829);
-        assert_eq!(athl.username.unwrap_or("can't find username".to_string()), "gonza");
+        assert_eq!(
+            athl.username.unwrap_or("can't find username".to_string()),
+            "gonza"
+        );
         assert_eq!(athl.created_at.year(), 2018);
-        assert_eq!(athl.profile.as_str(), "https://graph.facebook.com/10156169906188476/picture?height=256&width=256");
+        assert_eq!(
+            athl.profile.as_str(),
+            "https://graph.facebook.com/10156169906188476/picture?height=256&width=256"
+        );
     }
     #[test]
     fn test_parse_activity() {
