@@ -76,6 +76,30 @@ impl StravaClient {
         Ok(token_set)
     }
 
+    pub async fn refresh_token(&self) -> Result<TokenSet, reqwest::Error> {
+        let content = self
+            .read_from_file(&self.token_file)
+            .expect("Could not read file");
+
+        let mut refresh_url = Url::parse(&self.base_url).unwrap();
+        refresh_url.set_path("/api/v3/oauth/token");
+        refresh_url.query_pairs_mut()
+            .append_pair("client_id", &self.client_id.to_string())
+            .append_pair("client_secret", &self.client_secret)
+            .append_pair("grant_type", "refresh_token")
+            .append_pair("refresh_token", &content.refresh_token);
+
+        let client = reqwest::Client::new();
+        let response = client.post(refresh_url.to_string()).send().await?;
+        let token_set = response.error_for_status()?.json::<TokenSet>().await?;
+
+        // Save this to a file before coming back to the function, read it just to be sure
+        self.write_to_file(&token_set, &self.token_file)
+            .expect("Failed writing tokes to file");
+
+        Ok(token_set)
+    }
+
     fn write_to_file(&self, token_set: &TokenSet, token_file: &str) -> std::io::Result<()> {
         let mut file = File::create(token_file)?;
         file.write_all(serde_json::to_string(token_set)?.as_bytes())?;

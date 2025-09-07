@@ -1,9 +1,9 @@
 use chrono::{DateTime, Datelike, Utc};
 use serde;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use url::Url;
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Athlete {
     pub id: i64,
 
