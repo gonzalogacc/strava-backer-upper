@@ -1,4 +1,4 @@
-use crate::strava::ingester::Athlete;
+use crate::strava::parsers::{Athlete, Activity};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::fs::File;
@@ -127,6 +127,25 @@ impl StravaClient {
         let athlete = response.error_for_status()?.json::<Athlete>().await?;
         Ok(athlete)
     }
+
+    pub async fn get_activities(&self) -> Result<Vec<Activity>, reqwest::Error> {
+        let content = self
+            .read_from_file(&self.token_file)
+            .expect("Could not read file");
+
+        let client = reqwest::Client::new();
+        let response = client
+            .get(format!("{}/api/v3/activities", &self.base_url))
+            .header(
+                "Authorization",
+                "Bearer ".to_string() + &content.access_token,
+            )
+            .send()
+            .await?;
+        let activity = response.error_for_status()?.json::<Vec<Activity>>().await?;
+        Ok(activity)
+    }
+
 }
 
 #[tokio::test]
