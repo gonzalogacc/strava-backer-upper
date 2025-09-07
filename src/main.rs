@@ -1,7 +1,9 @@
 mod strava_endpoints;
-mod ingester;
 mod settings;
-mod strava_client;
+
+mod strava;
+
+mod schema;
 
 use axum::Router;
 

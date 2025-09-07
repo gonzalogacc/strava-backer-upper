@@ -1,9 +1,15 @@
-use crate::ingester::Athlete;
+use crate::strava::ingester::Athlete;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
 use url::Url;
+
+
+mod strava_client_m {
+
+
+}
 
 
 #[derive(Deserialize, Serialize)]

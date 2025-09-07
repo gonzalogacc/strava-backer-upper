@@ -1,44 +1,16 @@
-use crate::ingester::Athlete;
-use crate::strava_client::{LoginUrl, TokenSet};
-use crate::{settings, strava_client};
+use crate::strava::ingester::Athlete;
+use crate::schema::{ApiError, ApiResponse};
+use crate::settings;
+use crate::strava::strava_client::{LoginUrl, StravaClient, TokenSet};
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
-use axum::response::{IntoResponse, Response};
 use axum::routing::get;
-use axum::{Json, Router};
+use axum::Router;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 struct AppState {
     strava_client_secret: String,
-}
-
-enum ApiResponse<T> {
-    OK,
-    JsonData(T),
-}
-
-impl<T> IntoResponse for ApiResponse<T>
-where
-    T: Serialize,
-{
-    fn into_response(self) -> Response {
-        match self {
-            Self::OK => (StatusCode::OK).into_response(),
-            Self::JsonData(data) => (StatusCode::OK, Json(data)).into_response(),
-        }
-    }
-}
-
-struct ApiError {
-    status_code: StatusCode,
-    message: String,
-}
-
-impl IntoResponse for ApiError {
-    fn into_response(self) -> Response {
-        (self.status_code, Json(self.message)).into_response()
-    }
 }
 
 pub fn strava_router() -> Router {
@@ -68,7 +40,7 @@ async fn handler_login_link(
     State(state): State<Arc<AppState>>,
 ) -> Result<ApiResponse<LoginUrl>, ApiError> {
     let sc =
-        strava_client::StravaClient::init("https://www.strava.com", &state.strava_client_secret);
+        StravaClient::init("https://www.strava.com", &state.strava_client_secret);
     let link = sc.login_link().await;
     Ok(ApiResponse::JsonData(link))
 }
@@ -85,7 +57,7 @@ async fn code_exchange_handler(
     Query(code_params): Query<CodeParams>,
 ) -> Result<ApiResponse<TokenSet>, ApiError> {
     let sc =
-        strava_client::StravaClient::init("https://www.strava.com", &state.strava_client_secret);
+        StravaClient::init("https://www.strava.com", &state.strava_client_secret);
 
     let token_set = sc.code_exchange(&code_params.code).await;
     reqwest_response_handling(token_set)
@@ -95,7 +67,7 @@ async fn token_refresh_handler(
     State(state): State<Arc<AppState>>,
 ) -> Result<ApiResponse<TokenSet>, ApiError> {
     let sc =
-        strava_client::StravaClient::init("https://www.strava.com", &state.strava_client_secret);
+        StravaClient::init("https://www.strava.com", &state.strava_client_secret);
     let token_set = sc.refresh_token().await;
     reqwest_response_handling(token_set)
 }
@@ -120,7 +92,7 @@ fn reqwest_response_handling<T>(
 
 async fn me_handler(State(state): State<Arc<AppState>>) -> Result<ApiResponse<Athlete>, ApiError> {
     let sc =
-        strava_client::StravaClient::init("https://www.strava.com", &state.strava_client_secret);
+        StravaClient::init("https://www.strava.com", &state.strava_client_secret);
     let me = sc.get_user().await;
     reqwest_response_handling(me)
 }
