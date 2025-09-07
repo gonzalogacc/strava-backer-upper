@@ -5,13 +5,6 @@ use std::fs::File;
 use std::io::prelude::*;
 use url::Url;
 
-
-mod strava_client_m {
-
-
-}
-
-
 #[derive(Deserialize, Serialize)]
 pub struct LoginUrl {
     pub url: String,
@@ -36,7 +29,6 @@ pub struct StravaClient {
 
 impl StravaClient {
     pub fn init(base_url: &str, client_secret: &str) -> StravaClient {
-
         StravaClient {
             base_url: base_url.to_string(),
             client_id: 118327,
@@ -89,7 +81,8 @@ impl StravaClient {
 
         let mut refresh_url = Url::parse(&self.base_url).unwrap();
         refresh_url.set_path("/api/v3/oauth/token");
-        refresh_url.query_pairs_mut()
+        refresh_url
+            .query_pairs_mut()
             .append_pair("client_id", &self.client_id.to_string())
             .append_pair("client_secret", &self.client_secret)
             .append_pair("grant_type", "refresh_token")
