@@ -106,5 +106,10 @@ async fn activity_handler(
 ) -> Result<ApiResponse<Vec<Activity>>, ApiError> {
     let sc = StravaClient::init("https://www.strava.com", &state.strava_client_secret);
     let activities = sc.get_activities().await;
-    reqwest_response_handling(activities)
+
+    // Write activities to a file
+    let _ = sc.write_activities(&activities.as_ref().unwrap(), "./activities_file.json").await.unwrap();
+
+    let act = reqwest_response_handling(activities);
+    act
 }

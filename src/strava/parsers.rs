@@ -23,14 +23,14 @@ impl Athlete {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 struct ActivityAthlete {
     id: i64,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Activity {
-    id: i64,
+    pub id: i64,
     athlete: ActivityAthlete,
     name: String,
     distance: f32,
@@ -40,7 +40,7 @@ pub struct Activity {
 }
 
 impl Activity {
-    fn new(data: &str) -> Result<Activity, serde_json::Error> {
+    pub fn new(data: &str) -> Result<Activity, serde_json::Error> {
         serde_json::from_str(data)
     }
 }

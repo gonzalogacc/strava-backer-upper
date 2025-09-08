@@ -1,7 +1,9 @@
+use std::collections::HashSet;
 use crate::strava::parsers::{Athlete, Activity};
 use serde::{Deserialize, Serialize};
 use std::fs;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
+use std::io::{BufReader, BufWriter};
 use std::io::prelude::*;
 use url::Url;
 
@@ -146,6 +148,31 @@ impl StravaClient {
         Ok(activity)
     }
 
+    pub async fn write_activities(&self, activities: &Vec<Activity>, activities_file: &str) -> std::io::Result<()> {
+        let mut act_set = HashSet::new();
+
+        let file = File::open(activities_file)?;
+        let reader = BufReader::new(&file);
+
+        for line in reader.lines() {
+            let json = Activity::new(&line?);
+            act_set.insert(json?.id);
+        }
+
+        let mut f = OpenOptions::new()
+            .write(true)
+            .open(activities_file)
+            .unwrap();
+
+        for act in activities {
+            if !act_set.contains(&act.id) {
+               f.write_all(serde_json::to_string(act)?.as_bytes()).expect("Could not write");
+                let _ = f.write_all("\n".as_bytes());
+            }
+        }
+        let _ = f.flush().unwrap();
+        Ok(())
+    }
 }
 
 #[tokio::test]
