@@ -1,0 +1,22 @@
+
+services:
+  strava-db:
+    image: postgres:15-alpine
+    container_name: strava-db
+    restart: unless-stopped
+    expose:
+      - 5433
+    ports:
+      - 5433:5433
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=strava_db
+      - PGPORT=5433
+      - PGUSER=user
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d strava_db" ]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s

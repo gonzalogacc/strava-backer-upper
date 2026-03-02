@@ -8,12 +8,12 @@ pub struct Athlete {
     pub id: i64,
 
     #[serde(default)]
-    pub username: Option<String>,
+pub username: Option<String>,
     pub firstname: String,
-    lastname: String,
-    profile: Url,
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
+    pub lastname: String,
+    pub profile: Url,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 impl Athlete {

@@ -1,32 +1,29 @@
-use axum::http::StatusCode;
-use axum::Json;
-use axum::response::{IntoResponse, Response};
-use serde::Serialize;
+// @generated automatically by Diesel CLI.
 
-pub enum ApiResponse<T> {
-    OK,
-    JsonData(T),
-}
-
-impl<T> IntoResponse for ApiResponse<T>
-where
-    T: Serialize,
-{
-    fn into_response(self) -> Response {
-        match self {
-            Self::OK => (StatusCode::OK).into_response(),
-            Self::JsonData(data) => (StatusCode::OK, Json(data)).into_response(),
-        }
+diesel::table! {
+    athletes (id) {
+        id -> Int8,
+        username -> Nullable<Text>,
+        firstname -> Nullable<Text>,
+        lastname -> Nullable<Text>,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
+        another_column -> Nullable<Text>,
     }
 }
 
-pub struct ApiError {
-    pub status_code: StatusCode,
-    pub message: String,
-}
-
-impl IntoResponse for ApiError {
-    fn into_response(self) -> Response {
-        (self.status_code, Json(self.message)).into_response()
+diesel::table! {
+    token (id) {
+        id -> Int8,
+        expires_at -> Int4,
+        expires_in -> Int4,
+        token_type -> Text,
+        refresh_token -> Text,
+        access_token -> Text,
     }
 }
+
+diesel::allow_tables_to_appear_in_same_query!(
+    athletes,
+    token,
+);
