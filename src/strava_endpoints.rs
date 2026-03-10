@@ -122,7 +122,7 @@ async fn me_handler(State(state): State<Arc<StravaState>>) -> Result<ApiResponse
     let response = create_athlete(
         conn,
         me.id,
-        me.clone().to_string(),
+        me.clone().to_string(), <-- here the clone is not liking it
         me.firstname.clone(),
         me.lastname.clone(),
     ).await;
