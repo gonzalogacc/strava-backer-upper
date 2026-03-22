@@ -2,7 +2,7 @@ use chrono::{DateTime, NaiveDateTime, Utc};
 use diesel::pg::Pg;
 use diesel::prelude::*;
 use diesel::result::DatabaseErrorKind;
-use crate::schema::athletes::dsl::athletes;
+use crate::{schema::athletes::dsl::athletes, strava::parsers::Athlete};
 use axum::http::StatusCode;
 use deadpool_diesel::postgres::{Object, Pool}; // Import the Pool type
 use crate::{ApiError, ApiResponse};
@@ -34,19 +34,16 @@ pub struct AthleteRow {
 
 pub async fn create_athlete(
     conn: &Object,
-    user_id: i64,
-    user_name: String,
-    first_name: String,
-    last_name: String,
+    athlete: &Athlete
 ) -> Result<(), ApiError> {
     use crate::schema::athletes;
     use crate::schema::athletes::dsl::*;
     println!("heheheh");
     let new_athlete = NewAthleteRow {
-        id: user_id,
-        username: Some(user_name),
-        firstname: Some(first_name),
-        lastname: Some(last_name),
+        id: athlete.id,
+        username: athlete.username.clone(),
+        firstname: Some(athlete.firstname.clone()),
+        lastname: Some(athlete.lastname.clone()),
         created_at: Utc::now().naive_utc(),
         updated_at: Some(Utc::now().naive_utc()),
     };

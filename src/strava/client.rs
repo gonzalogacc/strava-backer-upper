@@ -69,10 +69,6 @@ impl StravaClient {
         let response = client.post(exchange_url.to_string()).send().await?;
         let token_set = response.error_for_status()?.json::<TokenSet>().await?;
 
-        // Save this to a file before coming back to the function, read it just to be sure
-        self.write_to_file(&token_set, &self.token_file)
-            .expect("Failed writing tokes to file");
-
         Ok(token_set)
     }
 
@@ -113,10 +109,6 @@ impl StravaClient {
     }
 
     pub async fn get_user(&self, content: TokenSet) -> Result<Athlete, reqwest::Error> {
-        // let content = self
-        //     .read_from_file(&self.token_file)
-        //     .expect("Could not read file");
-
         let client = reqwest::Client::new();
         let response = client
             .get(format!("{}/api/v3/athlete", &self.base_url))

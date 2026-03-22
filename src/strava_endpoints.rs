@@ -136,16 +136,12 @@ async fn me_handler(State(state): State<Arc<StravaState>>) -> Result<ApiResponse
         Err(e) => return Err(error_handling(e)),
     };
     
-    let me2 = me.clone();
     let response = create_athlete(
         &conn,
-        me.id,
-        me.username.unwrap_or_else(|| "".to_string()),
-        me.firstname,
-        me.lastname,
+        &me
     ).await;
     match response {
-        Ok(_) => Ok(ApiResponse::JsonData(me2)),
+        Ok(_) => Ok(ApiResponse::JsonData(me)),
         Err(e) => return  Err(ApiError { status_code: StatusCode::INTERNAL_SERVER_ERROR, message: String::from("Something went wrong")})
     }
 }
