@@ -14,16 +14,13 @@ diesel::table! {
 
 diesel::table! {
     token (id) {
-        id -> Int8,
-        expires_at -> Int4,
-        expires_in -> Int4,
+        expires_at -> Int8,
+        expires_in -> Int8,
         token_type -> Text,
         refresh_token -> Text,
         access_token -> Text,
+        id -> Int8,
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(
-    athletes,
-    token,
-);
+diesel::allow_tables_to_appear_in_same_query!(athletes, token,);

@@ -33,7 +33,7 @@ pub struct AthleteRow {
 }
 
 pub async fn create_athlete(
-    conn: Object,
+    conn: &Object,
     user_id: i64,
     user_name: String,
     first_name: String,

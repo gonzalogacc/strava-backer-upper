@@ -6,4 +6,4 @@ file = "src/schema.rs"
 custom_type_derives = ["diesel::query_builder::QueryId", "Clone"]
 
 [migrations_directory]
-dir = "/Users/ggarcia/git_sources/strava-backup/migrations"
+dir = "/home/gonza/sources/strava-backer-upper/migrations"

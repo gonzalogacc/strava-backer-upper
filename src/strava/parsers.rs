@@ -3,12 +3,12 @@ use serde;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Athlete {
     pub id: i64,
 
     #[serde(default)]
-pub username: Option<String>,
+    pub username: Option<String>,
     pub firstname: String,
     pub lastname: String,
     pub profile: Url,

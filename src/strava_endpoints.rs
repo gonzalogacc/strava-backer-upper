@@ -9,6 +9,7 @@ use std::sync::Arc;
 use crate::{ApiError, ApiResponse};
 use diesel::prelude::*;
 use crate::models::athlete::{AthleteRow, NewAthleteRow, create_athlete};
+use crate::models::token::{create_token_set, get_token_set};
 use crate::settings;
 
 use chrono::Utc;
@@ -69,8 +70,23 @@ async fn code_exchange_handler(
         Ok(tokens) => tokens,
         Err(e) => return Err(error_handling(e))
     };
-    Ok(ApiResponse::JsonData(token_set))
+
+    let token_set_2 = token_set.clone();
+    let conn = state.conn.get().await.expect("Connection not found");
+
+    match create_token_set(
+        conn,
+        1,
+        token_set.expires_at,
+        token_set.expires_in,
+        token_set.token_type,
+        token_set.refresh_token,
+        token_set.access_token
+    ).await{
+        Ok(_) => Ok(ApiResponse::JsonData(token_set_2)),
+        Err(e) => return  Err(ApiError { status_code: StatusCode::INTERNAL_SERVER_ERROR, message: String::from("Something went wrong")})}
 }
+
 
 async fn token_refresh_handler(
     State(state): State<Arc<StravaState>>,
@@ -111,27 +127,27 @@ async fn me_handler(State(state): State<Arc<StravaState>>) -> Result<ApiResponse
 
     let sc =
         StravaClient::init("https://www.strava.com", &state.strava_client_secret);
+    
+    let conn = state.conn.get().await.expect("Connection not found");
+    let token_set = get_token_set(&conn, 1).await.unwrap();
 
-    let me = match sc.get_user().await {
+    let me = match sc.get_user(token_set).await {
         Ok(me) => me,
         Err(e) => return Err(error_handling(e)),
     };
-    println!("lalalal");
-    let conn = state.conn.get().await.expect("Connection not found");
-    println!("After connA");
+    
+    let me2 = me.clone();
     let response = create_athlete(
-        conn,
+        &conn,
         me.id,
-        me.clone().to_string(), <-- here the clone is not liking it
-        me.firstname.clone(),
-        me.lastname.clone(),
+        me.username.unwrap_or_else(|| "".to_string()),
+        me.firstname,
+        me.lastname,
     ).await;
     match response {
-        Ok(_) => Ok(ApiResponse::JsonData(me)),
+        Ok(_) => Ok(ApiResponse::JsonData(me2)),
         Err(e) => return  Err(ApiError { status_code: StatusCode::INTERNAL_SERVER_ERROR, message: String::from("Something went wrong")})
     }
-
-
 }
 
 async fn activity_handler(

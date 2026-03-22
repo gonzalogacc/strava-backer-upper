@@ -13,13 +13,13 @@ pub struct LoginUrl {
 }
 
 // request to exchange the code from strava
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TokenSet {
-    expires_at: i64,
-    expires_in: i64,
-    token_type: String,
-    refresh_token: String,
-    access_token: String,
+    pub expires_at: i64,
+    pub expires_in: i64,
+    pub token_type: String,
+    pub refresh_token: String,
+    pub access_token: String,
 }
 
 pub struct StravaClient {
@@ -112,10 +112,10 @@ impl StravaClient {
         serde_json::from_str(&content)
     }
 
-    pub async fn get_user(&self) -> Result<Athlete, reqwest::Error> {
-        let content = self
-            .read_from_file(&self.token_file)
-            .expect("Could not read file");
+    pub async fn get_user(&self, content: TokenSet) -> Result<Athlete, reqwest::Error> {
+        // let content = self
+        //     .read_from_file(&self.token_file)
+        //     .expect("Could not read file");
 
         let client = reqwest::Client::new();
         let response = client
